@@ -120,7 +120,9 @@ namespace Gm_Construct
 
                 if (bridgeScene.IsValid() && bridgeScene.isLoaded)
                 {
-                    foreach (GameObject go in GameObject.FindObjectsOfType<GameObject>(true))
+                    var ls = GameObject.FindObjectsOfType<GameObject>(true);
+                    if(ls.Count <= level.transform.childCount + 2)
+                    foreach (GameObject go in ls)
                     {
                         if (go == null || go == level || go.transform.IsChildOf(level.transform)) continue;
                         if (go.scene == bridgeScene)
