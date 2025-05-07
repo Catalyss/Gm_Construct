@@ -1,4 +1,5 @@
 ﻿using Il2Cpp;
+using Il2CppMono.Security.Cryptography;
 using MelonLoader;
 using Unity.Networking.Transport;
 using UnityEngine;
@@ -103,14 +104,39 @@ namespace Gm_Construct
                         }
                     }
                     DestroyInjector = true;
+                    Setuplvl();
                 }
             }
+        }
+
+        private void Setuplvl()
+        {
+            var startlvl = GameObject.Find("StartButtonMission");
+            var steplvl = GameObject.Find("StepButtonMission");
+            var endlvl = GameObject.Find("EndButtonMission");
+            //var gamemanager = GameObject.Find("GameManager");
+            var gamemanager = GameObject.Find("GameManager");
+            var MissionManager = GameObject.Find("MissionManager");
+
+            ClientGenericInteractable cgi = startlvl.AddComponent<ClientGenericInteractable>();
+            MissionManager mm = MissionManager.AddComponent<MissionManager>();
+
+            cgi.interactText = "helpp";
+
+            mm.mission = CustomMissions.Mission;
+            mm.missionContainer = CustomMissions.Container;
+            var objs = new Il2CppSystem.Collections.Generic.List<IObjective>();
+            objs.Add(new IObjective((IntPtr)0));
+            mm.objectives = objs;
+            //cgi.OnInteract = mm.StartMission_Server();
+            //mm.missionData;
         }
         private GameObject level;
         private bool DestroyInjector = false;
         private bool Injected = false;
 
         public string scenepath = "";
+        public MissionData CustomMissions;
 
         public override void OnUpdate()
         {
@@ -142,7 +168,7 @@ namespace Gm_Construct
                 foreach (MissionSelectButton item in wrldinf)
                 {
                     var misst = item.GetComponent<MissionSelectButton>().mission;
-                    MissionData CustomMission = new MissionData(misst.seed, misst.Mission, misst.Region, "Bridge", misst.Container);
+                    MissionData CustomMission = CustomMissions = new MissionData(misst.seed, misst.Mission, misst.Region, "Bridge", misst.Container);
 
                     CustomMission.Mission._missionName = "Gm_Construct";
                     CustomMission.Mission._description = "Test Mission Area";
