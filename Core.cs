@@ -32,7 +32,7 @@ namespace Gm_Construct
                 foreach (string resName in assembly.GetManifestResourceNames())
                     LoggerInstance.Msg("Found resource: " + resName);
 
-                using (Stream stream = assembly.GetManifestResourceStream("ChangeBuildID.Resources.mapmod"))
+                using (Stream stream = assembly.GetManifestResourceStream("Gm_Construct.resources.gm_construct"))
                 {
                     if (stream == null)
                     {
