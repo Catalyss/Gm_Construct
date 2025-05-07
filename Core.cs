@@ -113,13 +113,23 @@ namespace Gm_Construct
             var MissionManager = GameObject.Find("MissionManager");
             var EnemyManager = GameObject.Find("EnemyManager");
 
+
             EnemyManager em = EnemyManager.AddComponent<EnemyManager>();
             ClientGenericInteractable cgi = startlvl.AddComponent<ClientGenericInteractable>();
             MissionManager mm = MissionManager.AddComponent<MissionManager>();
 
-            cgi.interactText = "helpp";
+            mm.enabled = true;
+            em.enabled = true;
 
-            mm.mission = CustomMissions.Mission;
+            cgi.interactText = "helpp";
+            Mission mission = new Mission();
+            mission.name = "test";
+            mission.AutoStart= true;
+            mission.ExtractAtEnd =true;
+            mission.MissionType = MissionType.CleanupDetail;
+            mission.SetupMission_Server(111);
+            mission.StartFirstObjective =true;
+            mm.mission = mission;
             mm.missionContainer = CustomMissions.Container;
             //cgi.OnInteract = mm.StartMission_Server();
             //mm.missionData;
