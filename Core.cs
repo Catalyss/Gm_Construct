@@ -99,7 +99,6 @@ namespace Gm_Construct
                         }
                     }
                     DestroyInjector = true;
-                    Setuplvl();
                 }
             }
         }
@@ -131,6 +130,7 @@ namespace Gm_Construct
 
         public string scenepath = "";
         public MissionData CustomMissions;
+        public int ii = 0;
 
         public override void OnUpdate()
         {
@@ -143,7 +143,7 @@ namespace Gm_Construct
                     if (bridgeScene.IsValid() && bridgeScene.isLoaded)
                     {
                         var ls = GameObject.FindObjectsOfType<GameObject>(true);
-                        if (ls.Count <= level.transform.childCount + 2) DestroyInjector = false;
+                        if (ii >= 10) { DestroyInjector = false; Setuplvl(); }
                         foreach (GameObject go in ls)
                         {
                             if (go == null || go == level || go.transform.IsChildOf(level.transform)) continue;
@@ -152,6 +152,8 @@ namespace Gm_Construct
                                 GameObject.Destroy(go);
                             }
                         }
+
+                        ii++;
                     }
                 }
             }
