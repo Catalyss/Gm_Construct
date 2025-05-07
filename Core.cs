@@ -1,4 +1,5 @@
 ﻿using Il2Cpp;
+using Il2CppInterop.Runtime;
 using Il2CppMono.Security.Cryptography;
 using MelonLoader;
 using Unity.Networking.Transport;
@@ -122,7 +123,7 @@ namespace Gm_Construct
             em.enabled = true;
 
             cgi.interactText = "helpp";
-            Mission mission = new Mission();
+            var mission = (Mission)ScriptableObject.CreateInstance(Il2CppType.Of<Mission>());
             mission.name = "test";
             mission.AutoStart= true;
             mission.ExtractAtEnd =true;
