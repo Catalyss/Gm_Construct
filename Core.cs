@@ -1,5 +1,6 @@
 ﻿using Il2Cpp;
 using MelonLoader;
+using Unity.Networking.Transport;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -60,6 +61,7 @@ namespace Gm_Construct
             }
         }
 
+
         private static Il2CppAssetBundle persistentBundle;
         public override void OnSceneWasLoaded(int buildIndex, string sceneName)
         {
@@ -73,17 +75,12 @@ namespace Gm_Construct
 
                 if (bridgeScene.IsValid() && bridgeScene.isLoaded)
                 {
-                    foreach (GameObject go in GameObject.FindObjectsOfType<GameObject>(true))
-                    {
-                        if (go.scene == bridgeScene)
-                        {
-                            GameObject.Destroy(go);
-                        }
-                    }
+
 
 
                     var lvel = persistentBundle.LoadAsset<GameObject>("assets/mods/examplemap/gm_construct.prefab");
-                    level = GameObject.Instantiate(lvel);
+                    level = GameObject.Instantiate(lvel,GameObject.FindObjectsOfType<GameObject>(true)[0].transform);
+                    level.transform.SetParent(null);
                     Core.logger.Msg("Cleared all GameObjects from Bridge scene.");
                     if (GameObject.Find("DropPodDoor")) GameObject.Find("DropPodDoor").SetActive(false);
                     var wrldinf = UnityEngine.Object.FindObjectsOfType<Renderer>(true);
@@ -97,7 +94,15 @@ namespace Gm_Construct
                             mats.mainTexture = text;
                         }
                     }
-                    DestroyInjector=true;
+
+                    foreach (GameObject go in GameObject.FindObjectsOfType<GameObject>(true))
+                    {
+                        if (go.scene == bridgeScene)
+                        {
+                            GameObject.Destroy(go);
+                        }
+                    }
+                    DestroyInjector = true;
                 }
             }
         }
@@ -117,7 +122,7 @@ namespace Gm_Construct
                 {
                     foreach (GameObject go in GameObject.FindObjectsOfType<GameObject>(true))
                     {
-                        if(go==null || go == level || go.transform.IsChildOf(level.transform))continue;
+                        if (go == null || go == level || go.transform.IsChildOf(level.transform)) continue;
                         if (go.scene == bridgeScene)
                         {
                             GameObject.Destroy(go);
