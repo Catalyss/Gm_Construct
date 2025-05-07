@@ -19,11 +19,6 @@ namespace Gm_Construct
         {
             LoggerInstance.Msg("Initialized.");
             logger = LoggerInstance;
-            //Il2Cpp.Global._buildID += "Modded Game";
-
-            //Il2Cpp.Global.DevMode = true;
-            //Il2Cpp.Online.appID = 3247750;  //Release Id
-            //Il2Cpp.Online.appID = 3581750;  //Demo Id  
             HarmonyInstance.PatchAll();
 
             LoggerInstance.Msg("ActualPlates initialized!");
@@ -76,11 +71,8 @@ namespace Gm_Construct
 
                 if (bridgeScene.IsValid() && bridgeScene.isLoaded)
                 {
-
-
-
                     var lvel = persistentBundle.LoadAsset<GameObject>("assets/mods/examplemap/gm_construct.prefab");
-                    level = GameObject.Instantiate(lvel,GameObject.FindObjectsOfType<GameObject>(true)[0].transform);
+                    level = GameObject.Instantiate(lvel);
                     level.transform.SetParent(null);
                     Core.logger.Msg("Cleared all GameObjects from Bridge scene.");
                     if (GameObject.Find("DropPodDoor")) GameObject.Find("DropPodDoor").SetActive(false);
@@ -96,8 +88,11 @@ namespace Gm_Construct
                         }
                     }
 
+                    SceneManager.MoveGameObjectToScene(level, SceneManager.GetSceneByName("Bridge"));
+
                     foreach (GameObject go in GameObject.FindObjectsOfType<GameObject>(true))
                     {
+                        if (go == null || go == level || go.transform.IsChildOf(level.transform)) continue;
                         if (go.scene == bridgeScene)
                         {
                             GameObject.Destroy(go);
@@ -117,7 +112,9 @@ namespace Gm_Construct
             //var gamemanager = GameObject.Find("GameManager");
             var gamemanager = GameObject.Find("GameManager");
             var MissionManager = GameObject.Find("MissionManager");
+            var EnemyManager = GameObject.Find("EnemyManager");
 
+            EnemyManager em = EnemyManager.AddComponent<EnemyManager>();
             ClientGenericInteractable cgi = startlvl.AddComponent<ClientGenericInteractable>();
             MissionManager mm = MissionManager.AddComponent<MissionManager>();
 
@@ -125,9 +122,6 @@ namespace Gm_Construct
 
             mm.mission = CustomMissions.Mission;
             mm.missionContainer = CustomMissions.Container;
-            var objs = new Il2CppSystem.Collections.Generic.List<IObjective>();
-            objs.Add(new IObjective((IntPtr)0));
-            mm.objectives = objs;
             //cgi.OnInteract = mm.StartMission_Server();
             //mm.missionData;
         }
@@ -142,22 +136,24 @@ namespace Gm_Construct
         {
             if (DestroyInjector)
             {
-                Scene bridgeScene = SceneManager.GetSceneByName("Bridge");
-
-                if (bridgeScene.IsValid() && bridgeScene.isLoaded)
+                if (level != null)
                 {
-                    var ls = GameObject.FindObjectsOfType<GameObject>(true);
-                    if(ls.Count <= level.transform.childCount + 2)
-                    foreach (GameObject go in ls)
+                    Scene bridgeScene = SceneManager.GetSceneByName("Bridge");
+
+                    if (bridgeScene.IsValid() && bridgeScene.isLoaded)
                     {
-                        if (go == null || go == level || go.transform.IsChildOf(level.transform)) continue;
-                        if (go.scene == bridgeScene)
+                        var ls = GameObject.FindObjectsOfType<GameObject>(true);
+                        if (ls.Count <= level.transform.childCount + 2) DestroyInjector = false;
+                        foreach (GameObject go in ls)
                         {
-                            GameObject.Destroy(go);
+                            if (go == null || go == level || go.transform.IsChildOf(level.transform)) continue;
+                            if (go.scene == bridgeScene)
+                            {
+                                GameObject.Destroy(go);
+                            }
                         }
                     }
                 }
-
             }
 
             if (GameObject.Find("SelectMissionWindow(Clone)") == null || Injected) return;
