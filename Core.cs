@@ -123,7 +123,7 @@ namespace Gm_Construct
             em.enabled = true;
 
             cgi.interactText = "helpp";
-            var mission = (Mission)ScriptableObject.CreateInstance(Il2CppType.Of<Mission>());
+            var mission = (CleanupDetailMission)ScriptableObject.CreateInstance(Il2CppType.Of<CleanupDetailMission>());
             mission.name = "test";
             mission.AutoStart= true;
             mission.ExtractAtEnd =true;
