@@ -147,11 +147,11 @@ namespace Gm_Construct
             
             mission.addedSymbolsPerRound=5;
             mission.codeBreakingRounds=5;
-            var test = new CodeBreakingObjective(ScriptableObject.CreateInstance(Il2CppType.Of<CodeBreakingObjective>()).Pointer);
-            var OnionObjectives = new OnionObjective(ScriptableObject.CreateInstance(Il2CppType.Of<OnionObjective>()).Pointer);
-            var DefendPointObjectves = new DefendPointObjectve(ScriptableObject.CreateInstance(Il2CppType.Of<DefendPointObjectve>()).Pointer);
-            var GoToWaypointObjectives  = new GoToWaypointObjective (ScriptableObject.CreateInstance(Il2CppType.Of<GoToWaypointObjective>()).Pointer);
-            var PowerTargetsObjectives   = new PowerTargetsObjective  (ScriptableObject.CreateInstance(Il2CppType.Of<PowerTargetsObjective>()).Pointer);
+            var test                        = new CodeBreakingObjective(ScriptableObject.CreateInstance(Il2CppType.Of<CodeBreakingObjective>()).Pointer);
+            var OnionObjectives             = new OnionObjective(ScriptableObject.CreateInstance(Il2CppType.Of<OnionObjective>()).Pointer);
+            var DefendPointObjectves        = new DefendPointObjectve(ScriptableObject.CreateInstance(Il2CppType.Of<DefendPointObjectve>()).Pointer);
+            var GoToWaypointObjectives      = new GoToWaypointObjective(ScriptableObject.CreateInstance(Il2CppType.Of<GoToWaypointObjective>()).Pointer);
+            var PowerTargetsObjectives      = new PowerTargetsObjective (ScriptableObject.CreateInstance(Il2CppType.Of<PowerTargetsObjective>()).Pointer);
 
 
             mission.codeBreakingObjective = test;
