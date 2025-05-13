@@ -24,6 +24,9 @@ namespace Gm_Construct
 
             LoggerInstance.Msg("ActualPlates initialized!");
 
+            
+
+
             if (persistentBundle == null)
             {
                 var assembly = typeof(Core).Assembly;
@@ -63,9 +66,14 @@ namespace Gm_Construct
         public override void OnSceneWasLoaded(int buildIndex, string sceneName)
         {
             Injected = false;
-
+            ii = 0;
+            DestroyInjector = false;
+            if(sceneName == "Hub")
+            {
+                GetMissions();
+                ReplaceMissions();
+            }
             LoggerInstance.Msg($"Scene loaded: {sceneName}");
-
             if (sceneName == "Bridge")
             {
                 Scene bridgeScene = SceneManager.GetSceneByName("Bridge");
@@ -109,37 +117,67 @@ namespace Gm_Construct
             var startlvl = GameObject.Find("StartButtonMission");
             var steplvl = GameObject.Find("StepButtonMission");
             var endlvl = GameObject.Find("EndButtonMission");
-            //var gamemanager = GameObject.Find("GameManager");
-            var gamemanager = GameObject.Find("GameManager");
+
             var MissionManager = GameObject.Find("MissionManager");
             var EnemyManager = GameObject.Find("EnemyManager");
 
-
+            var managersvnfbhnd = Resources.FindObjectsOfTypeAll<EnemyManager>();
             EnemyManager em = EnemyManager.AddComponent<EnemyManager>();
-            ClientGenericInteractable cgi = startlvl.AddComponent<ClientGenericInteractable>();
+            if (managersvnfbhnd[1] != null) em = managersvnfbhnd[1].GetComponent<EnemyManager>();
+
+            ClientInteractableObject cgi = startlvl.AddComponent<ClientInteractableObject>();
             MissionManager mm = MissionManager.AddComponent<MissionManager>();
 
             mm.enabled = true;
             em.enabled = true;
 
-            cgi.interactText = "helpp";
-            var mission = (CleanupDetailMission)ScriptableObject.CreateInstance(Il2CppType.Of<CleanupDetailMission>());
-            mission.name = "test";
-            mission.AutoStart= true;
-            mission.ExtractAtEnd =true;
-            mission.MissionType = MissionType.CleanupDetail;
-            mission.SetupMission_Server(111);
-            mission.StartFirstObjective =true;
-            mm.mission = mission;
+            cgi.Setup("Help", false, true);
+
+
+            mm.mission = GetMissions();
             mm.missionContainer = CustomMissions.Container;
-            //cgi.OnInteract = mm.StartMission_Server();
+            cgi.Setup("", false, true);
+
             //mm.missionData;
+        }
+
+        private CodeBreakingMission GetMissions()
+        {
+            var mission = new CodeBreakingMission(ScriptableObject.CreateInstance(Il2CppType.Of<CodeBreakingMission>()).Pointer);
+            
+            mission.addedSymbolsPerRound=5;
+            mission.codeBreakingRounds=5;
+            var test = new CodeBreakingObjective(ScriptableObject.CreateInstance(Il2CppType.Of<CodeBreakingObjective>()).Pointer);
+            var OnionObjectives = new OnionObjective(ScriptableObject.CreateInstance(Il2CppType.Of<OnionObjective>()).Pointer);
+            var DefendPointObjectves = new DefendPointObjectve(ScriptableObject.CreateInstance(Il2CppType.Of<DefendPointObjectve>()).Pointer);
+            var GoToWaypointObjectives  = new GoToWaypointObjective (ScriptableObject.CreateInstance(Il2CppType.Of<GoToWaypointObjective>()).Pointer);
+            var PowerTargetsObjectives   = new PowerTargetsObjective  (ScriptableObject.CreateInstance(Il2CppType.Of<PowerTargetsObjective>()).Pointer);
+
+
+            mission.codeBreakingObjective = test;
+            mission.onionObjective=OnionObjectives;
+            mission.uploadDataObjective=DefendPointObjectves;
+            mission.goToWaypointObjective=GoToWaypointObjectives;
+            mission.connectTerminalsObjective=PowerTargetsObjectives;
+            mission.connectTerminalsDescriptionID="PowerTargetsObjective";
+            mission.connectTerminalsHeaderID="PowerTargetsObjective";
+
+            mission.CompatibleLevels = LevelFlags.AllRegions;
+            mission.MissionColor = Color.cyan;
+
+            mission.name = "test";
+            mission._description = "fuck";
+            mission._missionName = "yessss";
+            mission._missionTypeName = "nooo";
+            mission.AutoStart = true;
+            mission.ExtractAtEnd = true;
+            mission.MissionType = MissionType.CodeBreaking;
+            mission.StartFirstObjective = true;
+            return mission;
         }
         private GameObject level;
         private bool DestroyInjector = false;
         private bool Injected = false;
-
-        public string scenepath = "";
         public MissionData CustomMissions;
         public int ii = 0;
 
@@ -172,11 +210,19 @@ namespace Gm_Construct
             if (GameObject.Find("SelectMissionWindow(Clone)") == null || Injected) return;
             if (Keyboard.current.lKey.wasReleasedThisFrame)
             {
-                Injected = true;
                 var wrldinf = UnityEngine.Object.FindObjectsOfType<MissionSelectButton>(true);
                 foreach (MissionSelectButton item in wrldinf)
                 {
+                    
                     var misst = item.GetComponent<MissionSelectButton>().mission;
+                    //var m = GetMissions();
+                    //m.MissionFlags = misst.Mission.MissionFlags;
+                    //m.TeamReviveMultiplier = misst.Mission.TeamReviveMultiplier;
+                    //m.AdditionalRewards = misst.Mission.AdditionalRewards;
+                    //m.CompatibleLevels = misst.Mission.CompatibleLevels;
+                    //m.MissionScriptMultiplier = misst.Mission.MissionScriptMultiplier;
+                    //m.MissionStartVoiceline = misst.Mission.MissionStartVoiceline;
+
                     MissionData CustomMission = CustomMissions = new MissionData(misst.seed, misst.Mission, misst.Region, "Bridge", misst.Container);
 
                     CustomMission.Mission._missionName = "Gm_Construct";
@@ -184,6 +230,14 @@ namespace Gm_Construct
                     item.GetComponent<MissionSelectButton>().mission = CustomMission;
                 }
             }
+        }
+
+        private void ReplaceMissions()
+        {
+            var allglobal = Resources.FindObjectsOfTypeAll<Il2Cpp.Global>();
+            var allMissions = Resources.FindObjectsOfTypeAll<Il2Cpp.Mission>();
+            Il2Cpp.Global global = allglobal[0];
+            global.Missions = (Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Mission>)allMissions;
         }
     }
 }
