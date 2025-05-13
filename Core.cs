@@ -2,9 +2,11 @@
 using Il2CppInterop.Runtime;
 using Il2CppMono.Security.Cryptography;
 using MelonLoader;
+using Unity.Netcode;
 using Unity.Networking.Transport;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 
 [assembly: MelonInfo(typeof(Gm_Construct.Core), "Gm_Construct", "1.0.0", "Catalyss", null)]
@@ -84,7 +86,7 @@ namespace Gm_Construct
                     level = GameObject.Instantiate(lvel);
                     level.transform.SetParent(null);
                     Core.logger.Msg("Cleared all GameObjects from Bridge scene.");
-                    if (GameObject.Find("DropPodDoor")) GameObject.Find("DropPodDoor").SetActive(false);
+                    //if (GameObject.Find("DropPodDoor")) GameObject.Find("DropPodDoor").SetActive(false);
                     var wrldinf = UnityEngine.Object.FindObjectsOfType<Renderer>(true);
                     foreach (Renderer item in wrldinf)
                     {
@@ -107,7 +109,8 @@ namespace Gm_Construct
                             GameObject.Destroy(go);
                         }
                     }
-                    DestroyInjector = true;
+                    Setuplvl();
+                    //DestroyInjector = true;
                 }
             }
         }
@@ -126,7 +129,15 @@ namespace Gm_Construct
             if (managersvnfbhnd[1] != null) em = managersvnfbhnd[1].GetComponent<EnemyManager>();
 
             ClientInteractableObject cgi = startlvl.AddComponent<ClientInteractableObject>();
+            NetworkObject nocgi = startlvl.AddComponent<NetworkObject>();
             MissionManager mm = MissionManager.AddComponent<MissionManager>();
+            NetworkObject nomm = MissionManager.AddComponent<NetworkObject>();
+
+            
+            nomm.enabled=true;
+            nomm.Spawn(false);
+            nocgi.enabled=true;
+            nocgi.Spawn(false);
 
             mm.enabled = true;
             em.enabled = true;
@@ -134,26 +145,36 @@ namespace Gm_Construct
             cgi.Setup("Help", false, true);
 
 
-            mm.mission = GetMissions();
-            mm.missionContainer = CustomMissions.Container;
+            //mm.mission = GetMissions();
+            //mm.missionContainer = CustomMissions.Container;
             cgi.Setup("", false, true);
 
             //mm.missionData;
         }
-
         private RegulatedRampageMission GetMissions()
         {
-            var mission = new RegulatedRampageMission(ScriptableObject.CreateInstance(Il2CppType.Of<RegulatedRampageMission>()).Pointer);
+            var cc = GameObject.CreatePrimitive(PrimitiveType.Cube);
             
-            var test = new RegulatedRampageObjective(ScriptableObject.CreateInstance(Il2CppType.Of<RegulatedRampageObjective>()).Pointer);
+            var mission = new RegulatedRampageMission(ScriptableObject.CreateInstance(Il2CppType.Of<RegulatedRampageMission>()).Pointer);
+
+            var test =cc.AddComponent<RegulatedRampageObjective>();
+            var no =cc.AddComponent<NetworkObject>();
+            no.enabled=true;
+            no.Spawn(false);
+            test.enabled=true;
 
             test.customWaveChance = 5;
             test.enemyIntensityIncreaseDuration= new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<float>(new float[]{700f,1200f,3000f});
             test.initialEnemyIntensity=99999999f;
-            
+
             PlayerModifier<float> t = new PlayerModifier<float>();
             t.values = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<float>(new float[]{700f,1200f,3000f,9000f});
             test.killProgressMultiplier = t;
+            test.title="THIGNY TITILE";
+            test.intensityIncreaseIndex=1;
+            test.waypointTarget=cc.transform;
+            test.name = "test Ob";
+
 
             mission.rampageObjective=test;
             mission.killsNeededForOnePlayer=5;
@@ -211,9 +232,6 @@ namespace Gm_Construct
                     
                     var misst = item.GetComponent<MissionSelectButton>().mission;
                     MissionData CustomMission = CustomMissions = new MissionData(misst.seed, misst.Mission, misst.Region, "Bridge", misst.Container);
-
-                    CustomMission.Mission._missionName = "Gm_Construct";
-                    CustomMission.Mission._description = "Test Mission Area";
                     item.GetComponent<MissionSelectButton>().mission = CustomMission;
                 }
             }
