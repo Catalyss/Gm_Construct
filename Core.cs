@@ -141,37 +141,32 @@ namespace Gm_Construct
             //mm.missionData;
         }
 
-        private CodeBreakingMission GetMissions()
+        private RegulatedRampageMission GetMissions()
         {
-            var mission = new CodeBreakingMission(ScriptableObject.CreateInstance(Il2CppType.Of<CodeBreakingMission>()).Pointer);
+            var mission = new RegulatedRampageMission(ScriptableObject.CreateInstance(Il2CppType.Of<RegulatedRampageMission>()).Pointer);
             
-            mission.addedSymbolsPerRound=5;
-            mission.codeBreakingRounds=5;
-            var test                        = new CodeBreakingObjective(ScriptableObject.CreateInstance(Il2CppType.Of<CodeBreakingObjective>()).Pointer);
-            var OnionObjectives             = new OnionObjective(ScriptableObject.CreateInstance(Il2CppType.Of<OnionObjective>()).Pointer);
-            var DefendPointObjectves        = new DefendPointObjectve(ScriptableObject.CreateInstance(Il2CppType.Of<DefendPointObjectve>()).Pointer);
-            var GoToWaypointObjectives      = new GoToWaypointObjective(ScriptableObject.CreateInstance(Il2CppType.Of<GoToWaypointObjective>()).Pointer);
-            var PowerTargetsObjectives      = new PowerTargetsObjective (ScriptableObject.CreateInstance(Il2CppType.Of<PowerTargetsObjective>()).Pointer);
+            var test = new RegulatedRampageObjective(ScriptableObject.CreateInstance(Il2CppType.Of<RegulatedRampageObjective>()).Pointer);
 
+            test.customWaveChance = 5;
+            test.enemyIntensityIncreaseDuration= new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<float>(new float[]{700f,1200f,3000f});
+            test.initialEnemyIntensity=99999999f;
+            
+            PlayerModifier<float> t = new PlayerModifier<float>();
+            t.values = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<float>(new float[]{700f,1200f,3000f,9000f});
+            test.killProgressMultiplier = t;
 
-            mission.codeBreakingObjective = test;
-            mission.onionObjective=OnionObjectives;
-            mission.uploadDataObjective=DefendPointObjectves;
-            mission.goToWaypointObjective=GoToWaypointObjectives;
-            mission.connectTerminalsObjective=PowerTargetsObjectives;
-            mission.connectTerminalsDescriptionID="PowerTargetsObjective";
-            mission.connectTerminalsHeaderID="PowerTargetsObjective";
+            mission.rampageObjective=test;
+            mission.killsNeededForOnePlayer=5;
 
             mission.CompatibleLevels = LevelFlags.AllRegions;
             mission.MissionColor = Color.cyan;
-
             mission.name = "test";
-            mission._description = "fuck";
-            mission._missionName = "yessss";
-            mission._missionTypeName = "nooo";
+            mission._description = "yessss";
+            mission._missionName = "Fuck";
+            mission._missionTypeName = "what ?";
             mission.AutoStart = true;
             mission.ExtractAtEnd = true;
-            mission.MissionType = MissionType.CodeBreaking;
+            mission.MissionType = MissionType.Purge;
             mission.StartFirstObjective = true;
             return mission;
         }
@@ -215,14 +210,6 @@ namespace Gm_Construct
                 {
                     
                     var misst = item.GetComponent<MissionSelectButton>().mission;
-                    //var m = GetMissions();
-                    //m.MissionFlags = misst.Mission.MissionFlags;
-                    //m.TeamReviveMultiplier = misst.Mission.TeamReviveMultiplier;
-                    //m.AdditionalRewards = misst.Mission.AdditionalRewards;
-                    //m.CompatibleLevels = misst.Mission.CompatibleLevels;
-                    //m.MissionScriptMultiplier = misst.Mission.MissionScriptMultiplier;
-                    //m.MissionStartVoiceline = misst.Mission.MissionStartVoiceline;
-
                     MissionData CustomMission = CustomMissions = new MissionData(misst.seed, misst.Mission, misst.Region, "Bridge", misst.Container);
 
                     CustomMission.Mission._missionName = "Gm_Construct";
